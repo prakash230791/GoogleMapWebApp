@@ -196,3 +196,7 @@ Always ensure your VMs are configured as standard (non-preemptible) instances fo
 ## 10. VM Naming Convention
 
 The request to change the VM name suffix to `vm02` is noted. This is an operational task performed within the Google Cloud Console or via `gcloud` CLI commands and does not directly impact the application's code or deployment process described in this guide. You would typically stop the VM, rename it, and then start it again.
+
+
+
+
