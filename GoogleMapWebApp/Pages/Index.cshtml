@@ -1,0 +1,42 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+@if (Model.User.Identity.IsAuthenticated)
+{
+    <p>Welcome @Model.User.Identity.Name</p>
+    <form method="post" asp-page-handler="Logout">
+        <button type="submit">Sign out</button>
+    </form>
+}
+else
+{
+    <form method="post">
+        <button type="submit">Login with Google</button>
+    </form>
+}
+
+<div id="map" style="height: 500px;"></div>
+
+@section Scripts {
+    <script src="https://maps.googleapis.com/maps/api/js?key=@Model.ApiKey&callback=initMap" async defer></script>
+    <script>
+        function initMap() {
+            var userLocation = @Html.Raw(Json.Serialize(Model.UserLocation));
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 15,
+                center: userLocation ? { lat: userLocation.latitude, lng: userLocation.longitude } : { lat: -34.397, lng: 150.644 }
+            });
+
+            if (userLocation) {
+                new google.maps.Marker({
+                    position: { lat: userLocation.latitude, lng: userLocation.longitude },
+                    map: map,
+                    title: 'Your Last Known Location'
+                });
+            }
+        }
+    </script>
+}

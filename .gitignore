@@ -1,0 +1,15 @@
+## Ignore Visual Studio temporary files, build results, and generated files
+[Bb]in/
+[Oo]bj/
+
+## Ignore user-specific files
+*.user
+*.suo
+
+## Ignore application settings files that contain secrets
+appsettings.Development.json
+Properties/launchSettings.json
+
+## Ignore other files
+*.vs/
+.vscode/
