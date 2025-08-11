@@ -8,8 +8,12 @@ This guide outlines the steps to build, publish, and deploy the Google Map Web A
 3.  [Google Cloud VM Setup](#3-google-cloud-vm-setup)
 4.  [Deployment using WinSCP](#4-deployment-using-winSCP)
 5.  [Service Configuration and Start](#5-service-configuration-and-start)
-6.  [Google Cloud Firewall Configuration](#6-google-cloud-firewall-configuration)
-7.  [Accessing the Application](#7-accessing-the-application)
+6.  [Updating OAuth Credentials (Client ID and Secret)](#6-updating-oauth-credentials-client-id-and-secret)
+7.  [Google Cloud Firewall Configuration](#7-google-cloud-firewall-configuration)
+8.  [Accessing the Application](#8-accessing-the-application)
+9.  [Configuring Custom Domain (myappss.top)](#9-configuring-custom-domain-myappss.top)
+10. [Understanding Google Cloud VM Deletion](#10-understanding-google-cloud-vm-deletion)
+11. [VM Naming Convention](#11-vm-naming-convention)
 
 ---
 
@@ -137,7 +141,44 @@ After transferring the files, you need to configure and start the systemd servic
 
 ---
 
-## 6. Google Cloud Firewall Configuration
+## 6. Updating OAuth Credentials (Client ID and Secret)
+
+If you need to update the Google OAuth Client ID or Client Secret for your application, these values are configured as environment variables within the systemd service file on your VM, overriding any values in `appsettings.json`.
+
+1.  **Connect to your VM via SSH.**
+
+2.  **Edit the systemd service file:**
+    ```bash
+    sudo nano /etc/systemd/system/GoogleMapWebApp.service
+    ```
+
+3.  **Locate and update the `Environment` variables:**
+    Find the lines starting with `Environment=Google__ClientId=` and `Environment=Google__ClientSecret=`. Update the values with your new Client ID and Client Secret.
+
+    Example:
+    ```ini
+    Environment=Google__ClientId=YOUR_NEW_CLIENT_ID_HERE
+    Environment=Google__ClientSecret=YOUR_NEW_CLIENT_SECRET_HERE
+    ```
+
+4.  **Save and exit nano:**
+    Press `Ctrl + O`, then `Enter`, then `Ctrl + X`.
+
+5.  **Reload the systemd daemon:**
+    This command ensures systemd recognizes the changes in the service file.
+    ```bash
+    sudo systemctl daemon-reload
+    ```
+
+6.  **Restart the application service:**
+    ```bash
+    sudo systemctl restart GoogleMapWebApp.service
+    ```
+    Your application will now use the updated credentials.
+
+---
+
+## 7. Google Cloud Firewall Configuration
 
 To access your application from the internet, you must create a firewall rule in your Google Cloud project.
 
@@ -155,17 +196,17 @@ To access your application from the internet, you must create a firewall rule in
     *   **Protocols and ports:**
         *   Select `Specified protocols and ports`.
         *   Check `TCP` and enter `5000` in the text box.
-5.  **Save the Rule:** Click **Create**.
+5.  **Save the Rule:** Click **Create`.
 
 ---
 
-## 7. Accessing the Application
+## 8. Accessing the Application
 
 Once all the above steps are completed, you can access your application from any web browser using your VM's external IP address and port 5000.
 
 Example URL: `http://34.23.161.59:5000` (Replace `34.23.161.59` with your VM's actual external IP address).
 
-## 8. Configuring Custom Domain (myappss.top)
+## 9. Configuring Custom Domain (myappss.top)
 
 To access your application using your custom domain `myappss.top`, you need to configure DNS records with your domain registrar (GoDaddy).
 
@@ -182,7 +223,7 @@ DNS changes can take some time to propagate across the internet (up to 48 hours,
 
 **Note on Port 5000:** To access your application directly via `http://myappss.top` (without specifying port 5000), you would typically set up a reverse proxy (like Nginx or Apache) on your VM to forward requests from port 80 (HTTP) to port 5000. This is an advanced configuration not covered in this guide.
 
-## 9. Understanding Google Cloud VM Deletion
+## 10. Understanding Google Cloud VM Deletion
 
 Google Cloud VMs can be deleted for several reasons:
 
@@ -193,10 +234,6 @@ Google Cloud VMs can be deleted for several reasons:
 
 Always ensure your VMs are configured as standard (non-preemptible) instances for persistent workloads and monitor your billing.
 
-## 10. VM Naming Convention
+## 11. VM Naming Convention
 
 The request to change the VM name suffix to `vm02` is noted. This is an operational task performed within the Google Cloud Console or via `gcloud` CLI commands and does not directly impact the application's code or deployment process described in this guide. You would typically stop the VM, rename it, and then start it again.
-
-
-
-
